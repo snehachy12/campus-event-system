@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
-import { EventBookingModel } from "@/lib/event-models";
+import { EventBookingModel } from "@/lib/event-model";
 import { EventModel } from "@/lib/models";
 import { createRazorpayOrder } from "@/lib/razorpay";
 import QRCode from "qrcode"; // Import this

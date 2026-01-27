@@ -262,7 +262,38 @@ const EventSchema = new Schema(
   },
   { timestamps: true }
 );
-
+const EventBookingSchema = new Schema(
+  {
+    // You likely need a reference to the event and the student here
+    eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true },
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true }, 
+    
+    // The fields you had floating:
+    attendeeCount: { type: Number, default: 1 },
+    totalAmount: { type: Number, required: true },
+    paymentMethod: { type: String, enum: ["online", "cash", "free"], required: true },
+    paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
+    razorpayOrderId: { type: String },
+    
+    bookingStatus: { 
+      type: String, 
+      enum: ["confirmed", "cancelled", "pending"], 
+      default: "confirmed" 
+    },
+    
+    specialRequirements: { type: String },
+    cancellationReason: { type: String },
+    cancelledBy: { type: String },
+    cancelledAt: { type: Date },
+    
+    statusHistory: [{
+      status: { type: String },
+      timestamp: { type: Date, default: Date.now },
+      note: { type: String }
+    }]
+  },
+  { timestamps: true }
+);
 const ResourceSchema = new Schema(
   {
     name: { type: String, required: true },

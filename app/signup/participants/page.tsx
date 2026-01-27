@@ -42,7 +42,7 @@ import {
   UserCheck
 } from "lucide-react"
 
-export default function StudentSignupPage() {
+export default function ParticipantSignupPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [availableClasses, setAvailableClasses] = useState<string[]>([])
