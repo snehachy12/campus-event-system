@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 // You might need to rename/create this sidebar for Organizer specific links
-import { OrganizerSidebar } from "@/components/organizer-sidebar" 
+import { OrganizerSidebar } from "@/components/ui/organizer-sidebar" 
 import { UserMenu } from "@/components/user-menu"
 import {
   Bell,

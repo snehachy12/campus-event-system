@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { OrganizerSidebar } from "@/components/organizer-sidebar"
+import { OrganizerSidebar } from "@/components/ui/organizer-sidebar"
 import { UserMenu } from "@/components/user-menu"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

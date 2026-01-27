@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { TeacherSidebar } from "@/components/ui/participant-sidebar"
+import { OrganizerSidebar } from "@/components/ui/organizer-sidebar"
 import { UserMenu } from "@/components/user-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
