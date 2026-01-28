@@ -72,7 +72,7 @@ export default function Home() {
           }`}
           href="/"
         >
-          <span className="text-foreground font-bold tracking-tight text-lg">Reinkei</span>
+          <span className="text-foreground font-bold tracking-tight text-lg">Festo</span>
         </a>
 
         <div className="absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-muted-foreground transition duration-200 hover:text-foreground md:flex md:space-x-2">
@@ -158,7 +158,7 @@ export default function Home() {
           className="flex items-center justify-center gap-2"
           href="/"
         >
-          <span className="text-foreground font-bold tracking-tight text-base">Reinkei</span>
+          <span className="text-foreground font-bold tracking-tight text-base">Festo</span>
         </a>
 
         <button

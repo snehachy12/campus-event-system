@@ -61,6 +61,7 @@ const AiMentorUI: React.FC<AiMentorUIProps> = ({ assistantId }) => {
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+
       
       @keyframes float {
         0%, 100% { transform: translateY(0); }
@@ -71,6 +72,7 @@ const AiMentorUI: React.FC<AiMentorUIProps> = ({ assistantId }) => {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.1); }
       }
+        
       
       .animate-blob {
         animation: blob 7s infinite;

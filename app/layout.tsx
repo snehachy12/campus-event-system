@@ -5,9 +5,9 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Reinkei - Campus Solution Platform",
+  title: "Festo - Campus Solution Platform",
   description: "Unified campus platform for students, teachers, and canteen management",
-  generator: "Reinkei",
+  generator: "Festo",
 }
 
 export default function RootLayout({
