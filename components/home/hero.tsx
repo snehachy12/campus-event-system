@@ -54,7 +54,7 @@ export default function Hero() {
               className="mx-auto mb-12 max-w-2xl text-lg text-muted-foreground"
             >
               Timetables, canteen ordering, events, resources, navigation, attendance and internships — unified with
-              role-based access for Participants, Organizers, Canteen and Admin.
+              role-based access for Students, Teachers, Canteen and Admin.
             </motion.p>
 
             <motion.div
@@ -81,11 +81,11 @@ export default function Hero() {
 
               {/* Role-based CTAs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-4xl">
-                <a href="/signup/participant" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
-                  I'm a Participant
+                <a href="/signup/student" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
+                  I'm a Student
                 </a>
-                <a href="/signup/organizer" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
-                  I'm an Organizer
+                <a href="/signup/teacher" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
+                  I'm a Teacher
                 </a>
                 <a href="/signup/canteen" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
                   I'm Canteen Staff

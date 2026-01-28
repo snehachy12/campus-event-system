@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [role, setRole] = useState<'participants' | 'organizer' | 'canteen'>('participants')
+  const [role, setRole] = useState<'student' | 'teacher' | 'canteen'>('student')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,8 +35,8 @@ export default function LoginPage() {
       localStorage.setItem('userRole', role)
       localStorage.setItem('currentUser', JSON.stringify(data))
       const dashboardUrls = {
-        participants: '/participants/dashboard',
-        organizer: '/organizer/dashboard',
+        student: '/student/dashboard',
+        teacher: '/teacher/dashboard',
         canteen: '/canteen/dashboard'
       }
       window.location.href = dashboardUrls[role]
@@ -125,8 +125,8 @@ export default function LoginPage() {
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="participants">Participant</SelectItem>
-                  <SelectItem value="organizer">Organizer</SelectItem>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="teacher">Teacher</SelectItem>
                   <SelectItem value="canteen">Canteen Manager</SelectItem>
                 </SelectContent>
               </Select>

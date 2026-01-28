@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ACE Campus Platform
 
-## Getting Started
+A unified campus solution with role-based access (Student, Teacher, Canteen, Admin-ready) in a dark black/orange theme.
 
-First, run the development server:
+## Features Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Student
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Timetable Management
+  - Days vertically, time slots horizontally
+  - Break slots highlighted and labeled
+  - Responsive grid with sticky headers
+- Food Ordering
+  - Category chips, search, filter
+  - Food cards: veg/spicy badges, rating, price, prep time
+  - Actions: Order Now, Schedule
+  - Recent orders section
+- Event Discovery
+  - Event cards with category badges, date/time/location/organizer
+  - Stats (upcoming count, participants, categories)
+  - Register action
+- Resource Booking (scaffold-ready)
+  - Library and seminar hall routes reserved
+- Campus Map (scaffold-ready)
+  - Route reserved for voice-based assistance
+- Attendance (view-only scaffold-ready)
+- Internship/Jobs (scaffold-ready)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Teacher
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Dashboard
+  - Quick links to primary tools: Timetable, Attendance, Food
+  - Profile dropdown with initials, name, role, logout
+- Timetable
+  - Same grid as Student with break slots
+- Attendance Management
+  - Date picker and section selector
+  - Mark all present/clear
+  - Per-student Present/Absent toggle
+  - Save action
+- Food Ordering
+  - Same UI/UX as Student (categories, search/filter, rich cards)
 
-## Learn More
+### Canteen (Phase 2 scaffolding)
 
-To learn more about Next.js, take a look at the following resources:
+- Registration captures business and operations data
+- Planned modules
+  - Stock management
+  - Orders (current/completed/history)
+  - Queue and scheduled orders
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Admin (Phase 2 scaffolding)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Events CRUD and publish
+- Internship/job posts CRUD
+- Approvals for teachers and canteen
 
-## Deploy on Vercel
+## Auth and Session
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Login (Student, Teacher): `POST /api/login`
+  - Request: `{ email, password, role }`
+  - Response: `{ id, name, email, role, avatarInitials }`
+- Signup: `POST /api/signup/{student|teacher|canteen}`
+- Passwords hashed with bcrypt
+- Client session stored in `localStorage`: `isLoggedIn`, `userRole`, `currentUser`
+- User dropdown (`components/user-menu.tsx`)
+  - Shows initials-based avatar, name, role
+  - Logout clears local storage and redirects to `/`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## UI/UX Highlights
+
+- Global dark theme with orange accents
+- Consistent button/card styles via `components/ui/*`
+- Sidebars
+  - `StudentSidebar` and `TeacherSidebar` with active route state
+- Timetable grid
+  - Sticky first column and header row
+  - Horizontal scroll for many time slots
+- Accessibility
+  - High-contrast labels and focus outlines
+
+## Data Models (MongoDB)
+
+- Student: core profile, academics, guardians, interests, skills, `avatarInitials`
+- Teacher: core profile, professional details, subjects, specializations, `avatarInitials`
+- Canteen: business, cuisines, operating hours, banking, `avatarInitials`
+
+## Key Routes Map
+
+- Student: `/student/dashboard`, `/student/timetable`, `/student/food`, `/student/events`, `/student/resources`, `/student/map`, `/student/attendance`, `/student/internships`
+- Teacher: `/teacher/dashboard`, `/teacher/timetable`, `/teacher/food`, `/teacher/attendance-management`
+- API: `/api/login`, `/api/signup/student`, `/api/signup/teacher`, `/api/signup/canteen`
+
+## Quick Start
+
+- Set `MONGODB_URI` in `.env.local`
+- `npm i` then `npm run dev`
+
+## Roadmap
+
+- Admin panel: Events and internships management
+- Resource booking: Library and seminar hall flows
+- Campus navigation with voice assistance
+- Razorpay integration for payments
+- Canteen stock, queues, scheduled pickups
+
+## Troubleshooting
+
+- API 500: check `MONGODB_URI` and Atlas IP access
+- Login failure: ensure user exists for chosen role
+- CSS glitches: restart dev server to refresh Tailwind JIT

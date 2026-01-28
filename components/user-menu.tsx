@@ -43,7 +43,7 @@ export function UserMenu() {
                 <DropdownMenuLabel>{user?.name || 'Guest'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-zinc-300">
-                  Role: {user?.role === 'canteen' ? 'Canteen Manager' : (user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || '-')}
+                  Role: {user?.role === 'canteen' ? 'Canteen Manager' : user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || '-'}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="text-red-400">Logout</DropdownMenuItem>
@@ -51,4 +51,5 @@ export function UserMenu() {
         </DropdownMenu>
     )
 }
+
 
