@@ -10,7 +10,9 @@ import {
   BookOpen, 
   Settings, 
   LogOut, 
-  Briefcase 
+  Briefcase, 
+  Boxes,
+  UserCircle
 } from "lucide-react"
 
 interface SidebarProps {
@@ -36,19 +38,19 @@ export function OrganizerSidebar({ className = "" }: SidebarProps) {
             label: "Events" 
         },
         { 
-            href: "/organizer/classrooms", 
-            icon: BookOpen, 
-            label: "Sessions & Classes" 
+            href: "/organizer/resources", 
+            icon: Boxes, 
+            label: "Resources" 
         },
         { 
-            href: "/organizer/food", 
-            icon: UtensilsCrossed, 
-            label: "Food Orders" 
+            href: "/organizer/participants", 
+            icon: UserCircle, 
+            label: "Participants" 
         },
         { 
             href: "/organizer/internships", 
             icon: Briefcase, 
-            label: "Internships" 
+            label: "Oppturnites" 
         },
     ]
 
@@ -56,7 +58,7 @@ export function OrganizerSidebar({ className = "" }: SidebarProps) {
         <aside className={`w-64 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 flex flex-col ${className}`}>
             <div className="p-6">
                 <Link href="/organizer/dashboard" className="text-[#e78a53] font-bold text-xl">
-                    ACE Campus
+                    Festo
                 </Link>
                 <p className="text-zinc-400 text-sm mt-1">Organizer Portal</p>
             </div>

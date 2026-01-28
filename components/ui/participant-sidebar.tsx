@@ -13,7 +13,12 @@ import {
   UserCheck,
   Settings,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  QrCode,
+  ScanQrCode,
+  BellIcon,
+  Clock,
+  Brain
 } from "lucide-react"
 
 interface SidebarProps {
@@ -28,19 +33,22 @@ export function ParticipantSidebar({ className = "" }: SidebarProps) {
   const navItems = [
     { href: "/participant/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/participant/events", icon: Users, label: "Browse Events" },
-    { href: "/participant/schedule", icon: Calendar, label: "My Schedule" },
-    // { href: "/participant/workshops", icon: BookOpen, label: "Workshops" },
-    { href: "/participant/food", icon: UtensilsCrossed, label: "Food Ordering" },
-    { href: "/participant/navigation", icon: MapPin, label: "Campus Navigation" },
-    { href: "/participant/attendance", icon: UserCheck, label: "My Attendance" },
-    { href: "/participant/internships", icon: Briefcase, label: "Internships" },
+    { href: "/participant/schedule", icon: Clock, label: "My Schedule" },
+
+    { href: "/participant/ticket", icon: ScanQrCode, label: "My Pass", priority: true },
+
+    { href: "/participant/workshop", icon: BookOpen, label: "Workshops" },
+    { href: "/participant/campus-mentor", icon: Brain, label: "Campus Mentor" },
+    { href: "/participant/announcement", icon: BellIcon, label: "Announcements" },
+
+    { href: "/participant/internship", icon: Briefcase, label: "Post-Event Opportunities" },
   ]
 
   return (
     <aside className={`w-64 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 flex flex-col ${className}`}>
       <div className="p-6">
         <Link href="/participant/dashboard" className="text-[#e78a53] font-bold text-xl">
-          ACE Campus
+          Festo
         </Link>
         <p className="text-zinc-400 text-sm mt-1">Participant Portal</p>
       </div>
@@ -52,17 +60,26 @@ export function ParticipantSidebar({ className = "" }: SidebarProps) {
 
           return (
             <Link key={item.href} href={item.href}>
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${active
-                ? 'text-white bg-[#e78a53]/10 border-l-2 border-[#e78a53]'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                }`}>
-                <Icon className={`h-5 w-5 ${active ? 'text-[#e78a53]' : ''}`} />
+              <div
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${active
+                    ? "text-white bg-[#e78a53]/10 border-l-2 border-[#e78a53]"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                  }`}
+              >
+                <Icon
+                  className={`h-5 w-5 ${active || item.priority ? "text-[#e78a53]" : ""
+                    }`}
+                />
+
                 <span>{item.label}</span>
               </div>
             </Link>
           )
         })}
       </nav>
+
+
+
 
       <div className="p-4 border-t border-zinc-800">
         <div className="flex items-center gap-4">
@@ -74,6 +91,6 @@ export function ParticipantSidebar({ className = "" }: SidebarProps) {
           </Button>
         </div>
       </div>
-    </aside>
+    </aside >
   )
 }
