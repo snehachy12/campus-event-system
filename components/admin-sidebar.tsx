@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { 
   LayoutDashboard, 
@@ -13,7 +13,9 @@ import {
   ChevronRight,
   Menu,
   AlarmCheck,
-  User
+  User,
+  Building2,
+  CheckCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCurrentAdminInfo } from '@/lib/auth-middleware'
@@ -29,6 +31,16 @@ const sidebarItems = [
     title: 'Events',
     href: '/admin/events',
     icon: Calendar
+  },
+  {
+    title: 'Venues',
+    href: '/admin/venues',
+    icon: Building2
+  },
+  {
+    title: 'Venue Requests',
+    href: '/admin/venue-requests',
+    icon: CheckCircle
   },
   {
     title: 'Resources',
@@ -55,14 +67,23 @@ const sidebarItems = [
 export function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [adminInfo, setAdminInfo] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const adminInfo = getCurrentAdminInfo()
+
+  // Only fetch admin info on client side
+  useEffect(() => {
+    setIsClient(true)
+    const info = getCurrentAdminInfo()
+    setAdminInfo(info)
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('userRole')
     localStorage.removeItem('currentUser')
+    localStorage.removeItem('adminToken')
     router.push('/')
   }
 
@@ -72,6 +93,13 @@ export function AdminSidebar() {
 
   const toggleMobileSidebar = () => {
     setIsMobileOpen(!isMobileOpen)
+  }
+
+  // Render empty shell on server to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <aside className="fixed left-0 top-0 z-50 h-full w-64 bg-gradient-to-b from-zinc-900/95 to-zinc-950/95 backdrop-blur-sm border-r border-zinc-800 lg:relative lg:z-0" />
+    )
   }
 
   return (
@@ -115,7 +143,7 @@ export function AdminSidebar() {
               </div>
               <div>
                 <h1 className="text-white font-semibold">Admin Panel</h1>
-                <p className="text-zinc-400 text-sm">{adminInfo?.username}</p>
+                <p className="text-zinc-400 text-sm">{adminInfo?.username || 'Admin'}</p>
               </div>
             </div>
           )}

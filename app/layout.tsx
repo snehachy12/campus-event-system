@@ -25,6 +25,7 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
+        <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
       </head>
       <body className="dark">{children}</body>
     </html>

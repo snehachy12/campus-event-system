@@ -13,6 +13,8 @@ import {
   UserCheck,
   Settings,
   LogOut,
+  Building2,
+  CheckSquare
 } from "lucide-react"
 
 interface SidebarProps {
@@ -29,6 +31,8 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
     { href: "/student/schedule", icon: Calendar, label: "Timetable" },
     { href: "/student/classroom", icon: BookOpen, label: "Classroom" },
     { href: "/student/events", icon: Users, label: "Events" },
+    { href: "/student/venues", icon: Building2, label: "Browse Venues" },
+    { href: "/student/booking-requests", icon: CheckSquare, label: "My Bookings" },
     { href: "/student/food", icon: UtensilsCrossed, label: "Food Ordering" },
     // { href: "/student/resources", icon: BookOpen, label: "Resources" },
     { href: "/student/ai-mentor", icon: MapPin, label: "Campus Navigation" },

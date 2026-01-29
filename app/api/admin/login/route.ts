@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,8 +18,20 @@ export async function POST(request: Request) {
 
     // Check hardcoded admin credentials
     if (username === "ADMIN1" && password === "ADMIN1") {
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          id: "admin1",
+          username: "ADMIN1",
+          role: "admin"
+        },
+        process.env.JWT_SECRET || "your-secret-key",
+        { expiresIn: "24h" }
+      );
+
       return NextResponse.json({
         message: "Login successful",
+        token,
         admin: {
           id: "admin1",
           username: "ADMIN1",

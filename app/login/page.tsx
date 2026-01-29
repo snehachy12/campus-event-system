@@ -33,6 +33,7 @@ export default function LoginPage() {
       }
       localStorage.setItem('isLoggedIn', 'true')
       localStorage.setItem('userRole', role)
+      localStorage.setItem('token', data.token)
       localStorage.setItem('currentUser', JSON.stringify(data))
       const dashboardUrls = {
         student: '/student/dashboard',

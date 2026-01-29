@@ -41,6 +41,7 @@ export default function AdminLoginPage() {
         // Store admin session
         localStorage.setItem('isLoggedIn', 'true')
         localStorage.setItem('userRole', 'admin')
+        localStorage.setItem('adminToken', data.token)
         localStorage.setItem('currentUser', JSON.stringify({
           id: 'admin1',
           username: 'ADMIN1',

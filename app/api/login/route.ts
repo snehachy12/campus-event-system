@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import { StudentModel, TeacherModel, CanteenModel } from "@/lib/models";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,7 +55,20 @@ export async function POST(request: Request) {
       userName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
     }
 
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: String(user._id),
+        email: user.email,
+        role,
+        name: userName,
+      },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "24h" }
+    );
+
     return NextResponse.json({
+      token,
       id: String(user._id),
       name: userName,
       email: user.email,

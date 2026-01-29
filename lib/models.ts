@@ -595,6 +595,150 @@ MaterialSchema.index({ fileType: 1 });
 
 export const MaterialModel =
   models.Material || model("Material", MaterialSchema);
+
+// Venue/Hall Schema
+const VenueSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    capacity: { type: Number, required: true }, // Maximum attendees
+    location: { type: String, required: true }, // Campus building/location
+    address: { type: String, required: true },
+    amenities: [{ type: String }], // projector, wifi, ac, parking, etc.
+    rentPrice: { type: Number, required: true }, // Price per day or event
+    priceType: {
+      type: String,
+      enum: ["per_day", "per_event", "hourly"],
+      default: "per_day",
+    },
+    availability: {
+      // Available days and hours
+      startDate: { type: Date, required: true }, // When venue becomes available
+      endDate: { type: Date }, // Optional end date if venue is temporary
+      operatingHours: {
+        start: { type: String, default: "09:00" }, // HH:MM format
+        end: { type: String, default: "18:00" },
+      },
+      blockedDates: [{ type: Date }], // Dates when venue is unavailable
+    },
+    amenitiesDetails: [
+      {
+        name: { type: String },
+        quantity: { type: Number },
+        description: { type: String },
+      },
+    ],
+    images: [{ type: String }], // Image URLs or base64
+    contactPersonName: { type: String },
+    contactPersonPhone: { type: String },
+    contactPersonEmail: { type: String },
+    rules: [{ type: String }], // Venue rules/policies
+    status: {
+      type: String,
+      enum: ["active", "inactive", "maintenance"],
+      default: "active",
+    },
+    totalBookings: { type: Number, default: 0 },
+    rating: { type: Number, default: 4.0, min: 0, max: 5 },
+    reviews: [
+      {
+        organizerId: { type: Schema.Types.ObjectId },
+        rating: { type: Number, min: 1, max: 5 },
+        comment: { type: String },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+VenueSchema.index({ name: "text", description: "text", location: "text" });
+VenueSchema.index({ status: 1 });
+VenueSchema.index({ capacity: 1 });
+VenueSchema.index({ "availability.startDate": 1, "availability.endDate": 1 });
+
+// Venue Booking Request Schema
+const VenueBookingRequestSchema = new Schema(
+  {
+    venueId: { type: Schema.Types.ObjectId, ref: "Venue", required: true },
+    organizerId: { type: Schema.Types.ObjectId, required: true }, // Student or Teacher ID
+    organizerType: {
+      type: String,
+      enum: ["student", "teacher"],
+      required: true,
+    },
+    organizerName: { type: String, required: true },
+    organizerEmail: { type: String, required: true },
+    organizerPhone: { type: String, required: true },
+    eventName: { type: String, required: true },
+    eventDescription: { type: String, required: true },
+    eventDate: { type: Date, required: true },
+    eventStartTime: { type: String, required: true }, // HH:MM format
+    eventEndTime: { type: String, required: true },
+    expectedAttendees: { type: Number, required: true },
+    purpose: { type: String, required: true }, // academic, cultural, sports, etc.
+    specialRequirements: { type: String }, // Any special needs
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "payment_pending", "completed"],
+      default: "pending",
+    },
+    requestDate: { type: Date, default: Date.now },
+    approvedBy: { type: String }, // Admin name who approved
+    approvedAt: { type: Date },
+    rejectionReason: { type: String },
+    rentAmount: { type: Number, required: true }, // Total rent for the booking
+    paymentId: { type: Schema.Types.ObjectId, ref: "VenueRentPayment" },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
+    },
+    razorpayOrderId: { type: String }, // Razorpay Order ID
+    razorpayPaymentId: { type: String }, // Razorpay Payment ID
+    notes: { type: String }, // Internal notes for admin
+  },
+  { timestamps: true }
+);
+
+VenueBookingRequestSchema.index({ venueId: 1, eventDate: 1 });
+VenueBookingRequestSchema.index({ organizerId: 1, status: 1 });
+VenueBookingRequestSchema.index({ status: 1 });
+VenueBookingRequestSchema.index({ eventDate: 1 });
+VenueBookingRequestSchema.index({ razorpayOrderId: 1 }, { sparse: true });
+
+// Venue Rent Payment Schema
+const VenueRentPaymentSchema = new Schema(
+  {
+    bookingRequestId: {
+      type: Schema.Types.ObjectId,
+      ref: "VenueBookingRequest",
+      required: true,
+    },
+    venueId: { type: Schema.Types.ObjectId, ref: "Venue", required: true },
+    organizerId: { type: Schema.Types.ObjectId, required: true },
+    amount: { type: Number, required: true },
+    razorpayOrderId: { type: String, required: true, unique: true },
+    razorpayPaymentId: { type: String },
+    razorpaySignature: { type: String },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed", "refunded"],
+      default: "pending",
+    },
+    paymentMethod: { type: String, default: "razorpay" },
+    receiptId: { type: String },
+    notes: { type: String },
+    refundAmount: { type: Number, default: 0 },
+    refundedAt: { type: Date },
+  },
+  { timestamps: true }
+);
+
+VenueRentPaymentSchema.index({ bookingRequestId: 1 });
+VenueRentPaymentSchema.index({ razorpayOrderId: 1 });
+VenueRentPaymentSchema.index({ organizerId: 1, paymentStatus: 1 });
+VenueRentPaymentSchema.index({ createdAt: -1 });
 export const AttendanceModel =
   models.Attendance || model("Attendance", AttendanceSchema);
 export const SectionModel = models.Section || model("Section", SectionSchema);
@@ -616,3 +760,10 @@ export const ClassroomModel =
 export const ClassroomEnrollmentModel =
   models.ClassroomEnrollment ||
   model("ClassroomEnrollment", ClassroomEnrollmentSchema);
+export const VenueModel = models.Venue || model("Venue", VenueSchema);
+export const VenueBookingRequestModel =
+  models.VenueBookingRequest ||
+  model("VenueBookingRequest", VenueBookingRequestSchema);
+export const VenueRentPaymentModel =
+  models.VenueRentPayment ||
+  model("VenueRentPayment", VenueRentPaymentSchema);

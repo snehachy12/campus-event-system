@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Calendar, UtensilsCrossed, UserCheck, Settings, LogOut, Users, BookOpen, ClipboardList, Plus, PlusCircle, User, FolderOpen } from "lucide-react"
+import { Calendar, UtensilsCrossed, UserCheck, Settings, LogOut, Users, BookOpen, ClipboardList, Plus, PlusCircle, User, FolderOpen, Building2, CheckSquare } from "lucide-react"
 
 interface SidebarProps {
     className?: string
@@ -15,11 +15,12 @@ export function OrganizerSidebar({ className = "" }: SidebarProps) {
 
     const navItems = [
         { href: "/organizer/dashboard", icon: Users, label: "Dashboard" },
+        { href: "/organizer/venues", icon: Building2, label: "Browse Venues" },
+        { href: "/organizer/booking-requests", icon: CheckSquare, label: "My Bookings" },
         { href: "/organizer/my-events", icon: Calendar, label: "My Events" },
         { href: "/organizer/create-event", icon: PlusCircle, label: "Create Events" },
         { href: "/organizer/paricipants", icon: User, label: "Partcipants" },
         { href: "/organizer/resources", icon: FolderOpen, label: "Resources" },
-        
     ]
 
     return (
