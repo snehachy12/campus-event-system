@@ -16,7 +16,7 @@ export function OrganizerSidebar({ className = "" }: SidebarProps) {
     const navItems = [
         { href: "/organizer/dashboard", icon: Users, label: "Dashboard" },
         { href: "/organizer/my-events", icon: Calendar, label: "My Events" },
-        { href: "/organizer/create-events", icon: PlusCircle, label: "Create Events" },
+        { href: "/organizer/create-event", icon: PlusCircle, label: "Create Events" },
         { href: "/organizer/paricipants", icon: User, label: "Partcipants" },
         { href: "/organizer/resources", icon: FolderOpen, label: "Resources" },
         
@@ -26,7 +26,7 @@ export function OrganizerSidebar({ className = "" }: SidebarProps) {
         <aside className={`w-64 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 flex flex-col ${className}`}>
             <div className="p-6">
                 <Link href="/teacher/dashboard" className="text-[#e78a53] font-bold text-xl">
-                    ACE Campus
+                    Festo
                 </Link>
                 <p className="text-zinc-400 text-sm mt-1">Teacher Portal</p>
             </div>
