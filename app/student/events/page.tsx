@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation" // Added for navigation
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -27,7 +28,9 @@ import {
   GraduationCap,
   Gamepad2,
   BookOpen,
-  Megaphone
+  Megaphone,
+  Crown,       // Added
+  ArrowRight   // Added
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { EventBookingDialog } from "@/components/event-booking-dialog"
@@ -58,6 +61,7 @@ interface Event {
 }
 
 export default function StudentEventsPage() {
+  const router = useRouter()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -68,10 +72,9 @@ export default function StudentEventsPage() {
   useEffect(() => {
     fetchEvents()
     
-    // Set up real-time polling to fetch new data every 30 seconds
     const interval = setInterval(() => {
       fetchEvents()
-    }, 30000) // 30 seconds
+    }, 30000) 
     
     return () => clearInterval(interval)
   }, [])
@@ -134,7 +137,6 @@ export default function StudentEventsPage() {
 
   const handleBookingSuccess = (booking: any) => {
     console.log('Booking successful:', booking)
-    // Refresh events to update any counts or availability
     fetchEvents()
   }
 
@@ -170,6 +172,35 @@ export default function StudentEventsPage() {
 
         {/* Events Content */}
         <div className="p-8">
+          
+          {/* --- EVENT ROLE SELECTION BANNER --- */}
+          <div className="mb-8">
+            <Card 
+              className="bg-gradient-to-r from-zinc-900 to-zinc-900/50 border-[#e78a53]/30 relative overflow-hidden group cursor-pointer" 
+              onClick={() => router.push('/events/role-selection')}
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#e78a53]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+              <CardContent className="p-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-[#e78a53]/20 rounded-full border border-[#e78a53]/30">
+                    <Crown className="h-8 w-8 text-[#e78a53]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">Choose Your Event Persona</h3>
+                    <p className="text-zinc-400 text-sm max-w-lg">
+                      Are you here to attend or to lead? Upgrade your profile to become an 
+                      <span className="text-[#e78a53] font-semibold"> Event Organizer</span> and host your own activities.
+                    </p>
+                  </div>
+                </div>
+                <Button className="bg-[#e78a53] hover:bg-[#e78a53]/90 text-white min-w-[150px]">
+                  Select Role <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+          {/* --- END BANNER --- */}
+
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="bg-zinc-900/50 border-zinc-800">

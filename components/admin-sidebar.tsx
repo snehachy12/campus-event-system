@@ -11,10 +11,13 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  AlarmCheck,
+  User
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCurrentAdminInfo } from '@/lib/auth-middleware'
+import { circInOut, circOut } from 'framer-motion'
 
 const sidebarItems = [
   {
@@ -36,6 +39,16 @@ const sidebarItems = [
     title: 'Internships',
     href: '/admin/internships',
     icon: Briefcase
+  },
+  {
+    title: 'Request',
+    href: '/admin/requests',
+    icon: AlarmCheck
+  },
+   {
+    title: 'Users',
+    href: '/admin/users',
+    icon: User
   }
 ]
 
