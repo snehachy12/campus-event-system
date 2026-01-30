@@ -68,7 +68,6 @@ const EventBookingSchema = new Schema(
 // Indexes for efficient querying
 EventBookingSchema.index({ studentId: 1, createdAt: -1 });
 EventBookingSchema.index({ eventId: 1, createdAt: -1 });
-EventBookingSchema.index({ bookingId: 1 });
 EventBookingSchema.index({ bookingStatus: 1 });
 EventBookingSchema.index({ paymentStatus: 1 });
 EventBookingSchema.index({ razorpayOrderId: 1 });

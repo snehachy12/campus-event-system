@@ -736,7 +736,6 @@ const VenueRentPaymentSchema = new Schema(
 );
 
 VenueRentPaymentSchema.index({ bookingRequestId: 1 });
-VenueRentPaymentSchema.index({ razorpayOrderId: 1 });
 VenueRentPaymentSchema.index({ organizerId: 1, paymentStatus: 1 });
 VenueRentPaymentSchema.index({ createdAt: -1 });
 export const AttendanceModel =

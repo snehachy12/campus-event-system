@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Calendar,
@@ -14,7 +15,10 @@ import {
   Settings,
   LogOut,
   Building2,
-  CheckSquare
+  CheckSquare,
+  Music,
+  Code,
+  Trophy
 } from "lucide-react"
 
 interface SidebarProps {
@@ -23,22 +27,42 @@ interface SidebarProps {
 
 export function StudentSidebar({ className = "" }: SidebarProps) {
   const pathname = usePathname()
+  const [persona, setPersona] = useState<string>("student")
+
+  useEffect(() => {
+    const storedPersona = localStorage.getItem("selectedPersona") || "student";
+    setPersona(storedPersona);
+    const handleStorageChange = () => {
+      const newPersona = localStorage.getItem("selectedPersona") || "student";
+      setPersona(newPersona);
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [])
 
   const isActive = (path: string) => pathname === path
 
-  const navItems = [
-    { href: "/student/dashboard", icon: Users, label: "Dashboard" },
+  const studentItems = [
+    { href: "/student/analysis", icon: Users, label: "Analysis" },
     { href: "/student/schedule", icon: Calendar, label: "Timetable" },
     { href: "/student/classroom", icon: BookOpen, label: "Classroom" },
     { href: "/student/events", icon: Users, label: "Events" },
     { href: "/student/venues", icon: Building2, label: "Browse Venues" },
     { href: "/student/booking-requests", icon: CheckSquare, label: "My Bookings" },
     { href: "/student/food", icon: UtensilsCrossed, label: "Food Ordering" },
-    // { href: "/student/resources", icon: BookOpen, label: "Resources" },
     { href: "/student/ai-mentor", icon: MapPin, label: "Campus Navigation" },
     { href: "/student/attendance", icon: UserCheck, label: "Attendance" },
     { href: "/student/internships", icon: Briefcase, label: "Internships" },
   ]
+
+  const participantItems = [
+    { href: "/student/workshops", icon: Code, label: "Workshops" },
+    { href: "/student/tech-fest", icon: Code, label: "Tech Fest" },
+    { href: "/student/cultural-fest", icon: Music, label: "Cultural Fest" },
+    { href: "/student/sports", icon: Trophy, label: "Sports" },
+  ]
+
+  const navItems = persona === "participant" ? participantItems : studentItems
 
   return (
     <aside className={`w-64 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 flex flex-col ${className}`}>
@@ -46,7 +70,7 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
         <Link href="/student/dashboard" className="text-[#e78a53] font-bold text-xl">
           ACE Campus
         </Link>
-        <p className="text-zinc-400 text-sm mt-1">Student Portal</p>
+        <p className="text-zinc-400 text-sm mt-1">{persona === "participant" ? "Participant Portal" : "Student Portal"}</p>
       </div>
 
       <nav className="flex-1 px-4 space-y-2">

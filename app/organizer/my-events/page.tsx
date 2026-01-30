@@ -1,62 +1,3 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { OrganizerSidebar } from "@/components/organizer-sidebar"
-import { 
-  Calendar, MapPin, Clock, Edit, Trash2, 
-  MoreVertical, Plus, Users, Ticket, Loader2, Eye 
-} from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-interface Event {
-  _id: string
-  title: string
-  eventType: string
-  startDate: string
-  endDate: string
-  startTime: string
-  venue: string
-  status: 'published' | 'draft' | 'cancelled' | 'completed'
-  capacity: number
-  soldCount?: number // Optional if you haven't implemented sales tracking yet
-  price: number
-}
-
-export default function MyEventsPage() {
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchMyEvents = async () => {
-      try {
-        const userStr = localStorage.getItem('currentUser')
-        if (!userStr) return
-        const user = JSON.parse(userStr)
-
-        const res = await fetch(`/api/organizer/events/my-events?userId=${user._id || user.id}`)
-        const data = await res.json()
-        
-        if (data.success) {
-          setEvents(data.events)
-        }
-      } catch (error) {
-        console.error("Failed to fetch events", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchMyEvents()
-  }, [])
 
   const getStatusColor = (status: string) => {
     switch(status) {
@@ -116,6 +57,43 @@ export default function MyEventsPage() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="text-lg font-bold text-white truncate">{event.title}</h3>
                       <Badge className={`capitalize ${getStatusColor(event.status)}`}>
+
+import { useEffect, useState } from "react";
+
+// Restrict access to organizer persona and approved status
+export default function MyEventsPage() {
+  const [allowed, setAllowed] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const persona = localStorage.getItem("selectedPersona");
+    const userStr = localStorage.getItem("currentUser");
+    let isApproved = false;
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        isApproved = user.role === "organizer" && (user.roleRequestStatus === "approved" || user.isApproved);
+      } catch {}
+    }
+    setAllowed(persona === "organizer" && isApproved);
+    setChecked(true);
+  }, []);
+
+  if (!checked) {
+    return <div className="min-h-screen flex items-center justify-center bg-black text-white">Checking permissions...</div>;
+  }
+  if (!allowed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p>You must be an approved organizer and have selected the Organizer persona to view this page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ...existing code...
                         {event.status}
                       </Badge>
                     </div>

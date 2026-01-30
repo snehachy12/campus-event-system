@@ -35,9 +35,27 @@ export async function GET(request: NextRequest) {
 
     await connectToDatabase();
 
+    // Check user role and approval
+    const User = (await import('@/lib/user')).default;
+    const userDoc = await User.findById(user.id);
+    if (!userDoc || userDoc.role !== 'organizer' || !(userDoc.roleRequestStatus === 'approved' || userDoc.isApproved)) {
+      return NextResponse.json(
+        { error: "Unauthorized: Not an approved organizer" },
+        { status: 403 }
+      );
+    }
+
     // Get query parameters for filtering
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+    const persona = request.headers.get("x-persona");
+
+    if (persona !== 'organizer') {
+      return NextResponse.json(
+        { error: "Persona must be organizer" },
+        { status: 403 }
+      );
+    }
 
     // Build filter object
     const filter: any = {

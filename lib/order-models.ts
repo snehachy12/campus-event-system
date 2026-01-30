@@ -82,7 +82,6 @@ const OrderSchema = new Schema(
 // Indexes for efficient querying
 OrderSchema.index({ customerId: 1, createdAt: -1 });
 OrderSchema.index({ canteenId: 1, createdAt: -1 });
-OrderSchema.index({ orderId: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ paymentStatus: 1 });
 OrderSchema.index({ razorpayOrderId: 1 });

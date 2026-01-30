@@ -79,19 +79,28 @@ export default function StudentDashboard() {
   const [internshipApplications, setInternshipApplications] = useState<InternshipApplication[]>([])
   const [loading, setLoading] = useState(true)
   const [currentUser, setCurrentUser] = useState<any>(null)
+  const [persona, setPersona] = useState<"student" | "participant">("student")
 
   useEffect(() => {
-    // Load current user
+    // Load current user and persona
     try {
       const user = localStorage.getItem('currentUser')
       if (user) {
         const userData = JSON.parse(user)
         setCurrentUser(userData)
       }
+      const storedPersona = localStorage.getItem('selectedPersona') as "student" | "participant" || "student"
+      setPersona(storedPersona)
     } catch (error) {
       console.error('Error loading user data:', error)
     }
   }, [])
+
+  const handlePersonaChange = (newPersona: "student" | "participant") => {
+    setPersona(newPersona)
+    localStorage.setItem('selectedPersona', newPersona)
+    window.dispatchEvent(new Event('storage'))
+  }
 
   useEffect(() => {
     if (currentUser) {
@@ -103,38 +112,59 @@ export default function StudentDashboard() {
 
   const fetchEventBookings = async () => {
     try {
-      const response = await fetch(`/api/event-bookings?studentId=${currentUser._id || currentUser.id}&limit=10`)
+      const token = localStorage.getItem('token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const response = await fetch(`/api/event-bookings?studentId=${currentUser._id || currentUser.id}&limit=10`, { headers })
       if (response.ok) {
         const data = await response.json()
         setEventBookings(data.bookings || [])
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to fetch event bookings:', response.status, errorData)
+        setEventBookings([])
       }
     } catch (error) {
       console.error('Error fetching event bookings:', error)
+      setEventBookings([])
     }
   }
 
   const fetchFoodOrders = async () => {
     try {
-      const response = await fetch(`/api/orders?customerId=${currentUser._id || currentUser.id}&limit=10`)
+      const token = localStorage.getItem('token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const response = await fetch(`/api/orders?customerId=${currentUser._id || currentUser.id}&limit=10`, { headers })
       if (response.ok) {
         const data = await response.json()
         // The API returns data field, not orders field
         setFoodOrders(data.data || [])
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to fetch food orders:', response.status, errorData)
+        setFoodOrders([])
       }
     } catch (error) {
       console.error('Error fetching food orders:', error)
+      setFoodOrders([])
     }
   }
   
   const fetchInternshipApplications = async () => {
     try {
-      const response = await fetch(`/api/student/internships/apply?studentId=${currentUser._id || currentUser.id}`)
+      const token = localStorage.getItem('token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const response = await fetch(`/api/student/internships/apply?studentId=${currentUser._id || currentUser.id}`, { headers })
       if (response.ok) {
         const data = await response.json()
         setInternshipApplications(data.applications || [])
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to fetch internship applications:', response.status, errorData)
+        setInternshipApplications([])
       }
     } catch (error) {
       console.error('Error fetching internship applications:', error)
+      setInternshipApplications([])
     } finally {
       setLoading(false)
     }
@@ -271,9 +301,11 @@ export default function StudentDashboard() {
         {/* Header */}
         <header className="bg-zinc-900/30 backdrop-blur-sm border-b border-zinc-800 sticky top-0 z-10">
           <div className="px-8 py-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Student Dashboard</h1>
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  {persona === "participant" ? "Participant Dashboard" : "Student Dashboard"}
+                </h1>
                 <p className="text-zinc-400">Your events, orders, and activity overview</p>
               </div>
               <div className="flex items-center gap-2">
@@ -282,6 +314,25 @@ export default function StudentDashboard() {
                 </Button>
                 <UserMenu />
               </div>
+            </div>
+            {/* Persona Toggle */}
+            <div className="flex gap-2">
+              <Button
+                variant={persona === "student" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePersonaChange("student")}
+                className={persona === "student" ? "bg-[#e78a53] hover:bg-[#e78a53]/90" : "border-zinc-700"}
+              >
+                Student
+              </Button>
+              <Button
+                variant={persona === "participant" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePersonaChange("participant")}
+                className={persona === "participant" ? "bg-[#e78a53] hover:bg-[#e78a53]/90" : "border-zinc-700"}
+              >
+                Participant
+              </Button>
             </div>
           </div>
         </header>

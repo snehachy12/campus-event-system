@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Calendar, UtensilsCrossed, UserCheck, Settings, LogOut, Users, BookOpen, ClipboardList, Building2, CheckSquare } from "lucide-react"
+import { Calendar, UtensilsCrossed, UserCheck, Settings, LogOut, Users, BookOpen, ClipboardList, Building2, CheckSquare, Code, Music, Trophy } from "lucide-react"
 
 interface SidebarProps {
     className?: string
@@ -11,21 +12,42 @@ interface SidebarProps {
 
 export function TeacherSidebar({ className = "" }: SidebarProps) {
     const pathname = usePathname()
+    const [persona, setPersona] = useState<string>("teacher")
+
+    useEffect(() => {
+        const storedPersona = localStorage.getItem("selectedPersona") || "teacher";
+        setPersona(storedPersona);
+        const handleStorageChange = () => {
+            const newPersona = localStorage.getItem("selectedPersona") || "teacher";
+            setPersona(newPersona);
+        };
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, [])
+
     const isActive = (path: string) => pathname === path
 
-    const navItems = [
-        { href: "/teacher/dashboard", icon: Users, label: "Dashboard" },
-        // { href: "/teacher/timetable", icon: Calendar, label: "Timetable" },
+    const teacherItems = [
+        { href: "/teacher/analysis", icon: Users, label: "Analysis" },
         { href: "/teacher/classroom", icon: UserCheck, label: "Classroom" },
         { href: "/teacher/events", icon: Users, label: "Events" },
         { href: "/teacher/venues", icon: Building2, label: "Browse Venues" },
         { href: "/teacher/booking-requests", icon: CheckSquare, label: "My Bookings" },
-        // { href: "/teacher/attendance-management", icon: UserCheck, label: "Attendance" },
         { href: "/teacher/food", icon: UtensilsCrossed, label: "Food" },
         { href: "/teacher/classroom/attendance", icon: UserCheck, label: "Attendance" },
         { href: "/teacher/classroom/materials", icon: BookOpen, label: "Materials" },
         { href: "/teacher/classroom/schedule", icon: ClipboardList, label: "Schedule" },
     ]
+
+    const participantItems = [
+        { href: "/teacher/workshops", icon: Code, label: "Workshops" },
+        { href: "/teacher/tech-fest", icon: Code, label: "Tech Fest" },
+        { href: "/teacher/cultural-fest", icon: Music, label: "Cultural Fest" },
+        { href: "/teacher/sports", icon: Trophy, label: "Sports" },
+    ]
+
+    const navItems = persona === "participant" ? participantItems : teacherItems
+
 
     return (
         <aside className={`w-64 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 flex flex-col ${className}`}>
@@ -33,7 +55,7 @@ export function TeacherSidebar({ className = "" }: SidebarProps) {
                 <Link href="/teacher/dashboard" className="text-[#e78a53] font-bold text-xl">
                     ACE Campus
                 </Link>
-                <p className="text-zinc-400 text-sm mt-1">Teacher Portal</p>
+                <p className="text-zinc-400 text-sm mt-1">{persona === "participant" ? "Participant Portal" : "Teacher Portal"}</p>
             </div>
 
             <nav className="flex-1 px-4 space-y-2">

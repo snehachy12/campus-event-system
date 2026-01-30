@@ -24,7 +24,7 @@ export async function PUT(req: Request) {
   try {
     await connectToDatabase()
     const body = await req.json()
-    const { userId, action } = body // action: 'approve' | 'reject'
+    const { userId, action, rejectionReason } = body // action: 'approve' | 'reject'
 
     if (!userId || !action) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 })
@@ -40,8 +40,13 @@ export async function PUT(req: Request) {
       user.role = user.requestedRole || 'organizer' // Upgrade role
       user.roleRequestStatus = 'approved'
       user.isApproved = true // If you use the boolean flag from earlier
+      user.roleRejectionReason = undefined // Clear any previous rejection reason
     } else if (action === 'reject') {
       user.roleRequestStatus = 'rejected'
+      // Store rejection reason if provided
+      if (rejectionReason) {
+        user.roleRejectionReason = rejectionReason
+      }
       // role remains 'participant' (or whatever it was before)
     } else {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 })

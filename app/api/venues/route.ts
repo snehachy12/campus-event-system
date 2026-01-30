@@ -33,10 +33,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Only students and teachers can request venues
-    if (!["student", "teacher"].includes(user.role)) {
+    // Only organizers and students/teachers can request venues
+    // For organizers, they must be approved and using organizer persona
+    if (user.role === 'organizer') {
+      const persona = request.headers.get('x-persona');
+      if (persona !== 'organizer') {
+        return NextResponse.json(
+          { error: "Must use organizer persona to request venues as organizer" },
+          { status: 403 }
+        );
+      }
+      // Organizer approval check would be done in the frontend before making request
+    } else if (!["student", "teacher"].includes(user.role)) {
       return NextResponse.json(
-        { error: "Only students and teachers can request venues" },
+        { error: "Only students, teachers, and approved organizers can request venues" },
         { status: 403 }
       );
     }

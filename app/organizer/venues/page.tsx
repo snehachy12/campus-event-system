@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Users, IndianRupee, Wifi, MoreHorizontal } from 'lucide-react';
+import { MapPin, Users, IndianRupee, Wifi, MoreHorizontal, CheckCircle2 } from 'lucide-react';
 
 interface Venue {
   _id: string;
@@ -34,6 +34,7 @@ interface UserData {
   role: string;
 }
 
+
 export default function VenuesBrowsingPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,36 @@ export default function VenuesBrowsingPage() {
     purpose: '',
     specialRequirements: '',
   });
+  const [allowed, setAllowed] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const persona = localStorage.getItem("selectedPersona");
+    const userStr = localStorage.getItem("currentUser");
+    let isApproved = false;
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        isApproved = user.role === "organizer" && (user.roleRequestStatus === "approved" || user.isApproved);
+      } catch {}
+    }
+    setAllowed(persona === "organizer" && isApproved);
+    setChecked(true);
+  }, []);
+
+  if (!checked) {
+    return <div className="min-h-screen flex items-center justify-center bg-black text-white">Checking permissions...</div>;
+  }
+  if (!allowed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p>You must be an approved organizer and have selected the Organizer persona to view this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Fetch user data from localStorage/session
   useEffect(() => {
@@ -160,9 +191,14 @@ export default function VenuesBrowsingPage() {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'x-persona': 'organizer',
         },
         body: JSON.stringify(payload),
       });
+
+      console.log('Booking response status:', response.status);
+      const responseData = await response.json();
+      console.log('Booking response data:', responseData);
 
       if (response.ok) {
         alert('Booking request submitted! Admin will review and approve/reject your request.');
@@ -179,8 +215,9 @@ export default function VenuesBrowsingPage() {
         setIsBookingOpen(false);
         setSelectedVenue(null);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to submit booking request');
+        const errorMsg = responseData.error || 'Failed to submit booking request';
+        console.error('Booking error:', errorMsg);
+        alert(errorMsg);
       }
     } catch (error) {
       console.error('Error submitting booking:', error);
@@ -222,102 +259,110 @@ export default function VenuesBrowsingPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {venues.map((venue) => (
-              <Card key={venue._id} className="flex flex-col overflow-hidden hover:shadow-lg transition">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
-                  <h3 className="text-xl font-bold">{venue.name}</h3>
-                  <p className="text-blue-100 text-sm mt-1">{venue.location}</p>
+              <Card key={venue._id} className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900/70 transition-all flex flex-col overflow-hidden">
+                {/* Image Placeholder */}
+                <div className="h-40 bg-gradient-to-br from-[#e78a53]/20 to-zinc-800 rounded-t-lg flex items-center justify-center text-zinc-600">
+                  <MapPin className="h-10 w-10" />
                 </div>
 
-                <CardContent className="flex-grow pt-6 space-y-4">
-                  <p className="text-gray-700 text-sm line-clamp-2">{venue.description}</p>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm">
-                      <Users className="w-4 h-4 text-gray-500" />
-                      <span>
-                        <strong>Capacity:</strong> {venue.capacity} people
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-sm">
-                      <IndianRupee className="w-4 h-4 text-gray-500" />
-                      <span>
-                        <strong>Rent:</strong> ₹{venue.rentPrice} {venue.priceType.replace('_', ' ')}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-sm">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                      <span>{venue.address}</span>
-                    </div>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge variant="outline" className="border-zinc-700 text-zinc-400 text-xs">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Venue
+                    </Badge>
+                    <Badge className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      Available
+                    </Badge>
                   </div>
-
-                  {venue.amenities.length > 0 && (
-                    <div>
-                      <p className="text-sm font-semibold mb-2">Amenities:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {venue.amenities.slice(0, 3).map((amenity, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
-                            {amenity}
-                          </Badge>
-                        ))}
-                        {venue.amenities.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{venue.amenities.length - 3}
-                          </Badge>
-                        )}
+                  <CardTitle className="text-white text-lg">{venue.name}</CardTitle>
+                  <div className="flex items-center text-zinc-400 text-sm mt-1">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {venue.location}
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="pt-0 flex-1 flex flex-col">
+                  <div className="space-y-3 mb-4 flex-1">
+                    <p className="text-zinc-300 text-sm line-clamp-2">{venue.description}</p>
+                    
+                    {/* Capacity & Price Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="bg-zinc-800/50 p-2 rounded flex items-center gap-2 text-zinc-300">
+                        <Users className="h-4 w-4 text-[#e78a53]" />
+                        {venue.capacity} Seats
+                      </div>
+                      <div className="bg-zinc-800/50 p-2 rounded flex items-center gap-2 text-zinc-300">
+                        <IndianRupee className="h-4 w-4 text-[#e78a53]" />
+                        ₹{venue.rentPrice}
                       </div>
                     </div>
-                  )}
 
-                  {venue.contactPersonName && (
-                    <div className="bg-gray-50 p-3 rounded text-sm">
-                      <p className="text-gray-600">
-                        <strong>Contact:</strong> {venue.contactPersonName}
-                      </p>
-                      <p className="text-gray-600">{venue.contactPersonPhone}</p>
-                    </div>
-                  )}
-                </CardContent>
+                    {/* Amenities Chips */}
+                    {venue.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {venue.amenities.slice(0, 3).map((amenity, i) => (
+                          <span key={i} className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-1 rounded-full border border-zinc-700">
+                            {amenity}
+                          </span>
+                        ))}
+                        {venue.amenities.length > 3 && (
+                          <span className="text-[10px] bg-zinc-800 text-zinc-500 px-2 py-1 rounded-full border border-zinc-700">
+                            +{venue.amenities.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
-                <div className="border-t p-4">
-                  <Dialog open={isBookingOpen && selectedVenue?._id === venue._id} onOpenChange={setIsBookingOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        onClick={() => setSelectedVenue(venue)}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                      >
-                        Request Booking
-                      </Button>
-                    </DialogTrigger>
+                    {/* Contact Info */}
+                    {venue.contactPersonName && (
+                      <div className="text-xs text-zinc-500 mt-3 pt-2 border-t border-zinc-800">
+                        <p className="text-zinc-400 font-medium">{venue.contactPersonName}</p>
+                        {venue.contactPersonPhone && <p className="text-zinc-500">{venue.contactPersonPhone}</p>}
+                      </div>
+                    )}
+                  </div>
 
-                    {selectedVenue?._id === venue._id && (
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>Book {venue.name}</DialogTitle>
-                          <DialogDescription>
-                            Fill in your event details to request a booking
-                          </DialogDescription>
-                        </DialogHeader>
+                  {/* Buttons */}
+                  <div className="flex gap-2 mt-auto">
+                    <Dialog open={isBookingOpen && selectedVenue?._id === venue._id} onOpenChange={setIsBookingOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          onClick={() => setSelectedVenue(venue)}
+                          className="flex-1 bg-[#e78a53] hover:bg-[#e78a53]/90 text-white"
+                        >
+                          Book Now
+                        </Button>
+                      </DialogTrigger>
 
-                        <form onSubmit={handleSubmitBooking} className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="eventName">Event Name *</Label>
-                              <Input
-                                id="eventName"
-                                name="eventName"
-                                value={bookingForm.eventName}
-                                onChange={handleInputChange}
-                                placeholder="e.g., Annual Gala"
-                                required
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="eventDate">Event Date *</Label>
-                              <Input
-                                id="eventDate"
-                                name="eventDate"
+                      {selectedVenue?._id === venue._id && (
+                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Book {venue.name}</DialogTitle>
+                            <DialogDescription>
+                              Fill in your event details to request a booking
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <form onSubmit={handleSubmitBooking} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="eventName">Event Name *</Label>
+                                <Input
+                                  id="eventName"
+                                  name="eventName"
+                                  value={bookingForm.eventName}
+                                  onChange={handleInputChange}
+                                  placeholder="e.g., Annual Gala"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="eventDate">Event Date *</Label>
+                                <Input
+                                  id="eventDate"
+                                  name="eventDate"
                                 type="date"
                                 value={bookingForm.eventDate}
                                 onChange={handleInputChange}

@@ -121,8 +121,8 @@ export async function PUT(
     }
 
     if (action === "approve") {
-      // Change status to payment_pending so organizer can proceed with payment
-      bookingRequest.status = "payment_pending";
+      // Set status to 'approved' first
+      bookingRequest.status = "approved";
       bookingRequest.approvedBy = admin.adminName || admin.email;
       bookingRequest.approvedAt = new Date();
     } else if (action === "reject") {

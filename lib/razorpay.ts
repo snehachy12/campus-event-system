@@ -1,15 +1,30 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
-// Initialize Razorpay instance
-export const razorpay = new Razorpay({
-    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+// Initialize Razorpay instance - lazy initialization
+let razorpayInstance: Razorpay | null = null;
+
+export const getRazorpayInstance = (): Razorpay => {
+    if (!razorpayInstance) {
+        const keyId = process.env.RAZORPAY_KEY_ID;
+        const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+        if (!keyId || !keySecret) {
+            throw new Error('Razorpay credentials are not configured in environment variables');
+        }
+
+        razorpayInstance = new Razorpay({
+            key_id: keyId,
+            key_secret: keySecret,
+        });
+    }
+    return razorpayInstance;
+};
 
 // Create Razorpay order
 export const createRazorpayOrder = async (amount: number, orderId: string, customerEmail: string) => {
     try {
+        const instance = getRazorpayInstance();
         const options = {
             amount: Math.round(amount * 100), // Amount in paise
             currency: 'INR',
@@ -20,7 +35,7 @@ export const createRazorpayOrder = async (amount: number, orderId: string, custo
             },
         };
 
-        const order = await razorpay.orders.create(options);
+        const order = await instance.orders.create(options);
         return order;
     } catch (error) {
         console.error('Error creating Razorpay order:', error);
@@ -51,7 +66,8 @@ export const verifyRazorpaySignature = (
 // Get payment details
 export const getRazorpayPayment = async (paymentId: string) => {
     try {
-        const payment = await razorpay.payments.fetch(paymentId);
+        const instance = getRazorpayInstance();
+        const payment = await instance.payments.fetch(paymentId);
         return payment;
     } catch (error) {
         console.error('Error fetching Razorpay payment:', error);
@@ -62,12 +78,13 @@ export const getRazorpayPayment = async (paymentId: string) => {
 // Refund payment
 export const refundRazorpayPayment = async (paymentId: string, amount?: number) => {
     try {
+        const instance = getRazorpayInstance();
         const refundOptions: any = {};
         if (amount) {
             refundOptions.amount = Math.round(amount * 100); // Amount in paise
         }
 
-        const refund = await razorpay.payments.refund(paymentId, refundOptions);
+        const refund = await instance.payments.refund(paymentId, refundOptions);
         return refund;
     } catch (error) {
         console.error('Error refunding Razorpay payment:', error);

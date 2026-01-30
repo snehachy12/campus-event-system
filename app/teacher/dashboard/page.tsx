@@ -69,6 +69,7 @@ interface AttendanceStats {
 export default function TeacherDashboardPage() {
     const [currentUser, setCurrentUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [persona, setPersona] = useState<"teacher" | "participant">("teacher")
     const [classrooms, setClassrooms] = useState<Classroom[]>([])
     const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])
     const [foodOrders, setFoodOrders] = useState<FoodOrder[]>([])
@@ -80,17 +81,25 @@ export default function TeacherDashboardPage() {
     })
 
     useEffect(() => {
-        // Load current user
+        // Load current user and persona
         try {
             const user = localStorage.getItem('currentUser')
             if (user) {
                 const userData = JSON.parse(user)
                 setCurrentUser(userData)
             }
+            const storedPersona = localStorage.getItem('selectedPersona') as "teacher" | "participant" || "teacher"
+            setPersona(storedPersona)
         } catch (error) {
             console.error('Error loading user data:', error)
         }
     }, [])
+
+    const handlePersonaChange = (newPersona: "teacher" | "participant") => {
+        setPersona(newPersona)
+        localStorage.setItem('selectedPersona', newPersona)
+        window.dispatchEvent(new Event('storage'))
+    }
 
     useEffect(() => {
         if (currentUser) {
@@ -103,25 +112,39 @@ export default function TeacherDashboardPage() {
 
     const fetchClassrooms = async () => {
         try {
-            const response = await fetch(`/api/classrooms?teacherId=${currentUser._id || currentUser.id}`)
+            const token = localStorage.getItem('token')
+            const headers = token ? { Authorization: `Bearer ${token}` } : {}
+            const response = await fetch(`/api/classrooms?teacherId=${currentUser._id || currentUser.id}`, { headers })
             if (response.ok) {
                 const data = await response.json()
                 setClassrooms(data.classrooms || [])
+            } else {
+                const errorData = await response.json()
+                console.error('Failed to fetch classrooms:', response.status, errorData)
+                setClassrooms([])
             }
         } catch (error) {
             console.error('Error fetching classrooms:', error)
+            setClassrooms([])
         }
     }
 
     const fetchFoodOrders = async () => {
         try {
-            const response = await fetch(`/api/orders/user?userId=${currentUser._id || currentUser.id}&userType=teacher&limit=5`)
+            const token = localStorage.getItem('token')
+            const headers = token ? { Authorization: `Bearer ${token}` } : {}
+            const response = await fetch(`/api/orders/user?userId=${currentUser._id || currentUser.id}&userType=teacher&limit=5`, { headers })
             if (response.ok) {
                 const data = await response.json()
                 setFoodOrders(data.data || [])
+            } else {
+                const errorData = await response.json()
+                console.error('Failed to fetch food orders:', response.status, errorData)
+                setFoodOrders([])
             }
         } catch (error) {
             console.error('Error fetching food orders:', error)
+            setFoodOrders([])
         } finally {
             setLoading(false)
         }
@@ -129,29 +152,53 @@ export default function TeacherDashboardPage() {
 
     const fetchAttendanceStats = async () => {
         try {
-            // For now, use mock data - replace with actual API call when available
-            setAttendanceStats({
-                totalClasses: classrooms.length,
-                classesToday: 3,
-                studentsPresent: 85,
-                attendanceRate: 92
-            })
+            const token = localStorage.getItem('token')
+            const headers = token ? { Authorization: `Bearer ${token}` } : {}
+            const response = await fetch(`/api/teacher/attendance?teacherId=${currentUser._id || currentUser.id}`, { headers })
+            if (response.ok) {
+                const data = await response.json()
+                setAttendanceStats(data.stats || {
+                    totalClasses: 0,
+                    classesToday: 0,
+                    studentsPresent: 0,
+                    attendanceRate: 0
+                })
+            } else {
+                const errorData = await response.json()
+                console.error('Failed to fetch attendance stats:', response.status, errorData)
+                setAttendanceStats({
+                    totalClasses: 0,
+                    classesToday: 0,
+                    studentsPresent: 0,
+                    attendanceRate: 0
+                })
+            }
         } catch (error) {
             console.error('Error fetching attendance stats:', error)
+            setAttendanceStats({
+                totalClasses: 0,
+                classesToday: 0,
+                studentsPresent: 0,
+                attendanceRate: 0
+            })
         }
     }
-
     const fetchTodaySchedule = async () => {
         try {
-            // Mock data for today's classes - replace with actual API call
-            const mockTodayClasses = [
-                { classroomId: 'CS101', subject: 'Data Structures', time: '9:00 AM', room: 'Room 301', students: 45 },
-                { classroomId: 'CS102', subject: 'Algorithms', time: '11:00 AM', room: 'Lab 2', students: 40 },
-                { classroomId: 'CS103', subject: 'Database Systems', time: '2:00 PM', room: 'Room 205', students: 38 }
-            ]
-            setTodayClasses(mockTodayClasses)
+            const token = localStorage.getItem('token')
+            const headers = token ? { Authorization: `Bearer ${token}` } : {}
+            const response = await fetch(`/api/teacher/schedule?teacherId=${currentUser._id || currentUser.id}&date=${new Date().toISOString().split('T')[0]}`, { headers })
+            if (response.ok) {
+                const data = await response.json()
+                setTodayClasses(data.classes || [])
+            } else {
+                const errorData = await response.json()
+                console.error('Failed to fetch today schedule:', response.status, errorData)
+                setTodayClasses([])
+            }
         } catch (error) {
             console.error('Error fetching today schedule:', error)
+            setTodayClasses([])
         }
     }
 
@@ -177,16 +224,39 @@ export default function TeacherDashboardPage() {
             <TeacherSidebar />
             <main className="flex-1 overflow-auto">
                 <header className="bg-zinc-900/50 backdrop-blur-sm border-b border-zinc-800">
-                    <div className="px-8 py-6 flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-white">Teacher Dashboard</h1>
-                            <p className="text-zinc-400 mt-2">Welcome back, {currentUser?.firstName || 'Teacher'}</p>
+                    <div className="px-8 py-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h1 className="text-3xl font-bold text-white">
+                                    {persona === "participant" ? "Participant Dashboard" : "Teacher Dashboard"}
+                                </h1>
+                                <p className="text-zinc-400 mt-2">Welcome back, {currentUser?.firstName || 'Teacher'}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="icon">
+                                    <Bell className="h-5 w-5 text-zinc-400" />
+                                </Button>
+                                <UserMenu />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon">
-                                <Bell className="h-5 w-5 text-zinc-400" />
+                        {/* Persona Toggle */}
+                        <div className="flex gap-2">
+                            <Button
+                                variant={persona === "teacher" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handlePersonaChange("teacher")}
+                                className={persona === "teacher" ? "bg-[#e78a53] hover:bg-[#e78a53]/90" : "border-zinc-700"}
+                            >
+                                Teacher
                             </Button>
-                            <UserMenu />
+                            <Button
+                                variant={persona === "participant" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handlePersonaChange("participant")}
+                                className={persona === "participant" ? "bg-[#e78a53] hover:bg-[#e78a53]/90" : "border-zinc-700"}
+                            >
+                                Participant
+                            </Button>
                         </div>
                     </div>
                 </header>

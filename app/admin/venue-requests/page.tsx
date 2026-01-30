@@ -67,6 +67,9 @@ export default function VenueRequestsPage() {
       }
 
       const data = await response.json();
+      // Debug log: print all fetched booking requests
+      // eslint-disable-next-line no-console
+      console.log('Fetched booking requests:', data.bookingRequests);
       setRequests(data.bookingRequests);
       setError(null);
     } catch (error) {

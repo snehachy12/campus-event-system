@@ -32,6 +32,8 @@ export default function AdminRoleRequestsPage() {
   const [loading, setLoading] = useState(true)
   const [processingId, setProcessingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
+  const [rejectionReason, setRejectionReason] = useState('')
 
   // Fetch Data
   useEffect(() => {
@@ -53,18 +55,24 @@ export default function AdminRoleRequestsPage() {
   }
 
   // Handle Action (Approve/Reject)
-  const handleDecision = async (userId: string, action: 'approve' | 'reject') => {
+  const handleDecision = async (userId: string, action: 'approve' | 'reject', reason?: string) => {
     setProcessingId(userId)
     try {
       const res = await fetch('/api/admin/role-requests', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, action })
+        body: JSON.stringify({ 
+          userId, 
+          action,
+          ...(action === 'reject' && reason && { rejectionReason: reason })
+        })
       })
 
       if (res.ok) {
         // Remove the processed user from the list locally (Optimistic update)
         setRequests(prev => prev.filter(req => req._id !== userId))
+        setRejectingId(null)
+        setRejectionReason('')
       } else {
         setError("Failed to process request")
       }
@@ -156,24 +164,56 @@ export default function AdminRoleRequestsPage() {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button 
-                        onClick={() => handleDecision(req._id, 'reject')}
-                        disabled={processingId === req._id}
-                        variant="outline" 
-                        className="flex-1 border-red-900/30 text-red-400 hover:bg-red-950 hover:text-red-300 hover:border-red-900/50"
-                      >
-                        {processingId === req._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
-                        Reject
-                      </Button>
-                      
-                      <Button 
-                        onClick={() => handleDecision(req._id, 'approve')}
-                        disabled={processingId === req._id}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        {processingId === req._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
-                        Approve
-                      </Button>
+                      {rejectingId === req._id ? (
+                        <div className="flex-1 flex gap-2">
+                          <input
+                            type="text"
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            placeholder="Rejection reason..."
+                            className="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded text-sm text-white"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => handleDecision(req._id, 'reject', rejectionReason)}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Confirm
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setRejectingId(null)
+                              setRejectionReason('')
+                            }}
+                            className="border-zinc-700 text-zinc-300"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <Button 
+                            onClick={() => setRejectingId(req._id)}
+                            disabled={processingId === req._id}
+                            variant="outline" 
+                            className="flex-1 border-red-900/30 text-red-400 hover:bg-red-950 hover:text-red-300 hover:border-red-900/50"
+                          >
+                            {processingId === req._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+                            Reject
+                          </Button>
+                          
+                          <Button 
+                            onClick={() => handleDecision(req._id, 'approve')}
+                            disabled={processingId === req._id}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            {processingId === req._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
+                            Approve
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

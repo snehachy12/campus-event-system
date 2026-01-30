@@ -67,21 +67,35 @@ export default function ParticipantDashboard() {
   const fetchDashboardData = async (userId: string) => {
     setLoading(true)
     try {
+      const token = localStorage.getItem('token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      
       const [bookingsRes, ordersRes] = await Promise.all([
-        fetch(`/api/event-bookings?participantId=${userId}&limit=20`),
-        fetch(`/api/orders?customerId=${userId}&limit=5`)
+        fetch(`/api/event-bookings?studentId=${userId}&limit=20`, { headers }),
+        fetch(`/api/orders?customerId=${userId}&limit=5`, { headers })
       ])
 
       if (bookingsRes.ok) {
         const data = await bookingsRes.json()
         setEventBookings(data.bookings || [])
+      } else {
+        const errorData = await bookingsRes.json()
+        console.error('Failed to fetch bookings:', bookingsRes.status, errorData)
+        setEventBookings([])
       }
+      
       if (ordersRes.ok) {
         const data = await ordersRes.json()
         setFoodOrders(data.data || [])
+      } else {
+        const errorData = await ordersRes.json()
+        console.error('Failed to fetch orders:', ordersRes.status, errorData)
+        setFoodOrders([])
       }
     } catch (error) {
       console.error("Error loading dashboard:", error)
+      setEventBookings([])
+      setFoodOrders([])
     } finally {
       setLoading(false)
     }
@@ -98,6 +112,16 @@ export default function ParticipantDashboard() {
     })
   }
 
+  const handleSwitchToOrganizer = () => {
+    // Check if user is an approved organizer
+    if (currentUser?.role === 'organizer' && (currentUser?.roleRequestStatus === 'approved' || currentUser?.isApproved)) {
+      localStorage.setItem("selectedPersona", "organizer")
+      window.location.href = "/organizer/dashboard"
+    } else {
+      alert("You must be an approved organizer to switch to organizer mode")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black flex">
       <ParticipantSidebar />
@@ -110,7 +134,15 @@ export default function ParticipantDashboard() {
                 Welcome back, <span className="text-[#e78a53] font-medium">{currentUser?.name || 'Student'}</span>
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {currentUser?.role === 'organizer' && (currentUser?.roleRequestStatus === 'approved' || currentUser?.isApproved) && (
+                <Button 
+                  onClick={handleSwitchToOrganizer}
+                  className="bg-[#e78a53] hover:bg-[#e78a53]/90 text-white"
+                >
+                  Switch to Organizer
+                </Button>
+              )}
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5 text-zinc-400" />
               </Button>

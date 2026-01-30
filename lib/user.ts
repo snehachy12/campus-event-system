@@ -38,6 +38,14 @@ const UserSchema = new mongoose.Schema({
     enum: ['organizer'], // Roles they can ask for
     default: null
   },
+  isApproved: {
+    type: Boolean,
+    default: false
+  },
+  roleRejectionReason: {
+    type: String,
+    default: null
+  },
   
   // --- Optional: Organizer Details ---
   organizationName: {

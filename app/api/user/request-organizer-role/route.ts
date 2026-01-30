@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     try {
         await connectToDatabase()
         const body = await req.json()
-        const { userId } = body
+        const { userId, organizationName } = body
 
         if (!userId) {
             return NextResponse.json({ error: "User ID required" }, { status: 400 })
@@ -15,14 +15,21 @@ export async function POST(req: Request) {
         // Update the user's status
         // Note: Ensure your User schema has 'roleRequestStatus' or similar field
         // If not, you might need to add it to lib/models/User.ts
+        const updateData: any = {
+            $set: {
+                roleRequestStatus: 'pending', // pending | approved | rejected
+                requestedRole: 'organizer'
+            }
+        }
+        
+        // Add organization name if provided
+        if (organizationName) {
+            updateData.$set.organizationName = organizationName
+        }
+        
         const user = await User.findByIdAndUpdate(
             userId,
-            {
-                $set: {
-                    roleRequestStatus: 'pending', // pending | approved | rejected
-                    requestedRole: 'organizer'
-                }
-            },
+            updateData,
             { new: true }
         )
 

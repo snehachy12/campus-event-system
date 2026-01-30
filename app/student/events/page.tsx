@@ -34,6 +34,7 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { EventBookingDialog } from "@/components/event-booking-dialog"
+import { UserMenu } from "@/components/user-menu"
 
 interface Event {
   _id: string
@@ -147,26 +148,19 @@ export default function StudentEventsPage() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="bg-zinc-900/30 backdrop-blur-sm border-b border-zinc-800 sticky top-0 z-10">
-          <div className="px-8 py-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Campus Events</h1>
-                <p className="text-zinc-400">Discover and join exciting events happening on campus</p>
-                {lastUpdated && (
-                  <p className="text-zinc-500 text-xs mt-1">Last updated: {lastUpdated.toLocaleTimeString()}</p>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={fetchEvents} variant="outline" className="border-zinc-700 text-zinc-400 hover:text-white" disabled={loading}>
-                  <Clock className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                  {loading ? 'Refreshing...' : 'Refresh'}
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Bell className="h-5 w-5 text-zinc-400" />
-                </Button>
-              </div>
-            </div>
+        <header className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-900/30 backdrop-blur px-8 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-1">Campus Events</h1>
+            <p className="text-zinc-400 text-sm">Discover and join exciting events happening on campus</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button onClick={fetchEvents} variant="ghost" size="icon" disabled={loading}>
+              <Clock className={`h-5 w-5 text-zinc-400 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5 text-zinc-400" />
+            </Button>
+            <UserMenu />
           </div>
         </header>
 

@@ -5,14 +5,9 @@ import {
   VenueRentPaymentModel,
 } from "@/lib/models";
 import jwt from "jsonwebtoken";
-import Razorpay from "razorpay";
+import { getRazorpayInstance } from "@/lib/razorpay";
 import crypto from "crypto";
 import mongoose from "mongoose";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "",
-});
 
 // Middleware to verify user
 const verifyUser = (request: NextRequest) => {
@@ -42,6 +37,17 @@ export async function POST(request: NextRequest) {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Check persona for organizers
+    if (user.role === 'organizer') {
+      const persona = request.headers.get('x-persona');
+      if (persona !== 'organizer') {
+        return NextResponse.json(
+          { error: "Must use organizer persona for venue rent payments" },
+          { status: 403 }
+        );
+      }
     }
 
     await connectToDatabase();
@@ -101,6 +107,7 @@ export async function POST(request: NextRequest) {
     const amount = bookingRequest.rentAmount;
 
     // Create Razorpay order
+    const razorpay = getRazorpayInstance();
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100), // Amount in paise
       currency: "INR",

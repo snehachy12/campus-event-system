@@ -7,16 +7,19 @@ export async function POST(request: Request) {
   try {
     await connectToDatabase ();
     const body = await request.json();
-    const { userId, ...eventData } = body;
+    const { userId, persona, ...eventData } = body;
 
     if (!userId) {
       return NextResponse.json({ error: "Organizer ID is missing" }, { status: 400 });
     }
 
-    // Verify user is an organizer
+    // Verify user is an approved organizer with correct persona
     const user = await User.findById(userId);
-    if (!user || user.role !== 'organizer') {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    if (!user || user.role !== 'organizer' || !(user.roleRequestStatus === 'approved' || user.isApproved)) {
+      return NextResponse.json({ error: "Unauthorized: Not an approved organizer" }, { status: 403 });
+    }
+    if (persona !== 'organizer') {
+      return NextResponse.json({ error: "Persona must be organizer" }, { status: 403 });
     }
 
     const newEvent = await Event.create({

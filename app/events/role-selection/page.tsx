@@ -26,38 +26,71 @@ export default function EventRoleSelectionPage() {
   }, [])
 
   const handleRoleConfirm = async () => {
-    if (!selectedRole || !currentUser) return
+    console.log('handleRoleConfirm called:', { selectedRole, currentUser, orgName })
     
-    if (selectedRole === 'organizer' && !orgName.trim()) return 
+    if (!selectedRole) {
+      console.log('No role selected')
+      return
+    }
+    
+    if (!currentUser) {
+      console.log('No current user')
+      alert('Please log in first')
+      return
+    }
+    
+    if (selectedRole === 'organizer' && !orgName.trim()) {
+      console.log('No org name provided')
+      return
+    }
 
+    console.log('Proceeding with role:', selectedRole)
     setLoading(true)
 
     if (selectedRole === 'participant') {
-      // 1. Participant Logic -> Go to Dashboard
+      // 1. Participant Logic -> Save persona and go to Dashboard
+      console.log('Switching to participant')
+      localStorage.setItem('selectedPersona', 'participant')
       setTimeout(() => {
         router.push('/partcipant/dashboard') 
-      }, 800)
+      }, 300)
     } else {
       // 2. Organizer Logic -> Request Role -> Go to Pending Page
+      console.log('Submitting organizer request')
       try {
+        const userId = currentUser._id || currentUser.id
+        console.log('Sending request with userId:', userId)
+        
         const response = await fetch('/api/user/request-organizer-role', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            userId: currentUser._id || currentUser.id,
+            userId: userId,
             organizationName: orgName 
           }),
         })
         
+        console.log('API response status:', response.status)
+        
         if (response.ok) {
+          const data = await response.json()
+          console.log('API response:', data)
+          // Update localStorage with new user data
+          const updatedUser = { ...currentUser, organizationName: orgName, roleRequestStatus: 'pending' }
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+          localStorage.setItem('selectedPersona', 'organizer')
           // ✅ REDIRECT TO PENDING PAGE
+          console.log('Redirecting to pending approval')
           router.push('/organizer/pending-approval')
         } else {
-          console.error("Failed to submit request")
+          const error = await response.json()
+          console.error("Failed to submit request:", error)
+          alert(error.error || 'Failed to submit organizer request')
           setLoading(false)
         }
       } catch (error) {
         console.error("Error requesting role:", error)
+        alert('Error submitting organizer request: ' + (error instanceof Error ? error.message : String(error)))
         setLoading(false)
       }
     }
@@ -165,16 +198,23 @@ export default function EventRoleSelectionPage() {
               <Button 
                 size="lg" 
                 onClick={handleRoleConfirm}
-                disabled={!selectedRole || (selectedRole === 'organizer' && !orgName.trim()) || loading}
+                disabled={!selectedRole || loading || (selectedRole === 'organizer' && !orgName.trim())}
                 className={`w-full h-12 text-lg font-semibold transition-all ${
-                  selectedRole === 'organizer' 
+                  !selectedRole || (selectedRole === 'organizer' && !orgName.trim())
+                    ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-50'
+                    : selectedRole === 'organizer' 
                     ? 'bg-[#e78a53] hover:bg-[#e78a53]/90 text-white shadow-[0_0_20px_rgba(231,138,83,0.3)]' 
                     : selectedRole === 'participant'
                     ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]'
                     : 'bg-zinc-800 text-zinc-400'
                 }`}
               >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Confirm Selection'}
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : 'Confirm Selection'}
               </Button>
               
               <p className="text-zinc-500 text-xs text-center">

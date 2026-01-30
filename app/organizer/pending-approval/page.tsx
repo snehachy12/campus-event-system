@@ -1,63 +1,77 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Clock, RefreshCw, LogOut, CheckCircle2, ShieldAlert } from "lucide-react"
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { 
+  Clock, 
+  CheckCircle2, 
+  ShieldAlert, 
+  LogOut, 
+  RefreshCw,
+  AlertCircle 
+} from 'lucide-react'
+
+interface User {
+  _id: string
+  name: string
+  role: string
+  roleRequestStatus: string
+  roleRejectionReason?: string
+  isApproved: boolean
+}
 
 export default function PendingApprovalPage() {
   const router = useRouter()
+  const [status, setStatus] = useState<string | null>(null)
   const [isChecking, setIsChecking] = useState(false)
-  const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>('pending')
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    // 1. Initial Check
     checkStatus()
-
-    // 2. Auto-Poll every 5 seconds
-    const interval = setInterval(() => {
-      checkStatus()
-    }, 5000)
-
+    // Check status every 5 seconds
+    const interval = setInterval(checkStatus, 5000)
     return () => clearInterval(interval)
   }, [])
 
   const checkStatus = async () => {
+    setIsChecking(true)
     try {
-      const userStr = localStorage.getItem('currentUser')
-      if (!userStr) return
+      const userId = localStorage.getItem('userId')
+      const token = localStorage.getItem('authToken')
 
-      const user = JSON.parse(userStr)
-      setIsChecking(true)
+      if (!userId || !token) {
+        router.push('/login')
+        return
+      }
 
-      // Fetch fresh user data from API
-      // You can create a simple /api/user/me route or re-use existing profile routes
-      const response = await fetch(`/api/user/profile?userId=${user._id || user.id}`)
-      
-      if (response.ok) {
-        const data = await response.json()
-        const freshUser = data.user
+      const res = await fetch(`/api/user/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
 
-        // LOGIC: If role changed to organizer, they are approved
-        if (freshUser.role === 'organizer' || freshUser.roleRequestStatus === 'approved') {
-          setStatus('approved')
-          
-          // Update local storage
-          localStorage.setItem('currentUser', JSON.stringify(freshUser))
-          
-          // Redirect immediately
+      if (res.ok) {
+        const userData: User = await res.json()
+        setUser(userData)
+        setStatus(userData.roleRequestStatus)
+        
+        if (userData.roleRejectionReason) {
+          setRejectionReason(userData.roleRejectionReason)
+        }
+
+        // Auto-redirect if approved
+        if (userData.roleRequestStatus === 'approved') {
           setTimeout(() => {
             router.push('/organizer/dashboard')
-          }, 1500)
-        } 
-        else if (freshUser.roleRequestStatus === 'rejected') {
-          setStatus('rejected')
+          }, 2000)
         }
       }
     } catch (error) {
-      console.error("Status check failed", error)
+      console.error('Error checking status:', error)
     } finally {
       setIsChecking(false)
     }
@@ -72,9 +86,17 @@ export default function PendingApprovalPage() {
             <ShieldAlert className="h-8 w-8 text-red-500" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Request Declined</h1>
-          <p className="text-zinc-400 mb-8">
+          <p className="text-zinc-400 mb-4">
             The admin team has reviewed and declined your request to become an organizer at this time.
           </p>
+          
+          {rejectionReason && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6">
+              <p className="text-xs text-red-400 font-semibold mb-1">Reason:</p>
+              <p className="text-sm text-red-300">{rejectionReason}</p>
+            </div>
+          )}
+
           <div className="space-y-3">
             <Link href="/participant/dashboard">
               <Button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white">
