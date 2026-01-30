@@ -1,111 +1,318 @@
-# ACE Campus Platform
+FESTO – Campus Event & Utility Platform
 
-A unified campus solution with role-based access (Student, Teacher, Canteen, Admin-ready) in a dark black/orange theme.
+FESTO is a unified campus platform combining academics, events, food, and administration with role-based access and event-specific roles.
+Built with a dark black + orange theme, optimized for clarity, scalability, and real campus workflows.
 
-## Features Overview
+🔑 Core Concept (What Makes FESTO Different)
 
-### Student
+User Roles: Student, Teacher, Canteen, Admin
 
-- Timetable Management
-  - Days vertically, time slots horizontally
-  - Break slots highlighted and labeled
-  - Responsive grid with sticky headers
-- Food Ordering
-  - Category chips, search, filter
-  - Food cards: veg/spicy badges, rating, price, prep time
-  - Actions: Order Now, Schedule
-  - Recent orders section
-- Event Discovery
-  - Event cards with category badges, date/time/location/organizer
-  - Stats (upcoming count, participants, categories)
-  - Register action
-- Resource Booking (scaffold-ready)
-  - Library and seminar hall routes reserved
-- Campus Map (scaffold-ready)
-  - Route reserved for voice-based assistance
-- Attendance (view-only scaffold-ready)
-- Internship/Jobs (scaffold-ready)
+Event Roles (Dynamic):
 
-### Teacher
+Participant
 
-- Dashboard
-  - Quick links to primary tools: Timetable, Attendance, Food
-  - Profile dropdown with initials, name, role, logout
-- Timetable
-  - Same grid as Student with break slots
-- Attendance Management
-  - Date picker and section selector
-  - Mark all present/clear
-  - Per-student Present/Absent toggle
-  - Save action
-- Food Ordering
-  - Same UI/UX as Student (categories, search/filter, rich cards)
+Organizer (Admin-approved)
 
-### Canteen (Phase 2 scaffolding)
+➡️ A single user (Student/Teacher) can switch event roles without breaking system security.
 
-- Registration captures business and operations data
-- Planned modules
-  - Stock management
-  - Orders (current/completed/history)
-  - Queue and scheduled orders
+👤 User Roles Overview
+Student / Teacher (Base Roles)
 
-### Admin (Phase 2 scaffolding)
+Both Students and Teachers can:
 
-- Events CRUD and publish
-- Internship/job posts CRUD
-- Approvals for teachers and canteen
+Use academic & utility features
 
-## Auth and Session
+Apply to become an Event Organizer
 
-- Login (Student, Teacher): `POST /api/login`
-  - Request: `{ email, password, role }`
-  - Response: `{ id, name, email, role, avatarInitials }`
-- Signup: `POST /api/signup/{student|teacher|canteen}`
-- Passwords hashed with bcrypt
-- Client session stored in `localStorage`: `isLoggedIn`, `userRole`, `currentUser`
-- User dropdown (`components/user-menu.tsx`)
-  - Shows initials-based avatar, name, role
-  - Logout clears local storage and redirects to `/`
+Join events as Participants
 
-## UI/UX Highlights
+🎟️ Event Roles (New)
+Participant
 
-- Global dark theme with orange accents
-- Consistent button/card styles via `components/ui/*`
-- Sidebars
-  - `StudentSidebar` and `TeacherSidebar` with active route state
-- Timetable grid
-  - Sticky first column and header row
-  - Horizontal scroll for many time slots
-- Accessibility
-  - High-contrast labels and focus outlines
+Register for events
 
-## Data Models (MongoDB)
+View event passes (QR-based – future-ready)
 
-- Student: core profile, academics, guardians, interests, skills, `avatarInitials`
-- Teacher: core profile, professional details, subjects, specializations, `avatarInitials`
-- Canteen: business, cuisines, operating hours, banking, `avatarInitials`
+Track registered events
 
-## Key Routes Map
+View event schedule & updates
 
-- Student: `/student/dashboard`, `/student/timetable`, `/student/food`, `/student/events`, `/student/resources`, `/student/map`, `/student/attendance`, `/student/internships`
-- Teacher: `/teacher/dashboard`, `/teacher/timetable`, `/teacher/food`, `/teacher/attendance-management`
-- API: `/api/login`, `/api/signup/student`, `/api/signup/teacher`, `/api/signup/canteen`
+Dashboard Includes
 
-## Quick Start
+Upcoming events
 
-- Set `MONGODB_URI` in `.env.local`
-- `npm i` then `npm run dev`
+Registered passes
 
-## Roadmap
+Event timeline
 
-- Admin panel: Events and internships management
-- Resource booking: Library and seminar hall flows
-- Campus navigation with voice assistance
-- Razorpay integration for payments
-- Canteen stock, queues, scheduled pickups
+Organizer (Admin Approved)
 
-## Troubleshooting
+Users must request organizer access.
 
-- API 500: check `MONGODB_URI` and Atlas IP access
-- Login failure: ensure user exists for chosen role
-- CSS glitches: restart dev server to refresh Tailwind JIT
+Flow
+
+Student/Teacher selects “Become Organizer”
+
+Request sent to Admin
+
+Admin approves / rejects
+
+Organizer dashboard unlocked
+
+Organizer Features
+
+Create & manage events
+
+View participants list
+
+Check-in management (future-ready)
+
+Event performance analytics
+
+Organizer Dashboard
+
+Total events created
+
+Total registrations
+
+Event-wise analytics
+
+Engagement stats
+
+🛡️ Admin Role (Phase 2 – Expanded)
+Admin Responsibilities
+
+Approve / reject:
+
+Organizer requests
+
+Teacher registrations
+
+Canteen registrations
+
+Manage:
+
+Events (CRUD + publish)
+
+Internship / Job posts
+
+Monitor platform-wide analytics
+
+Admin Analytics Dashboard
+
+Total users (students / teachers / organizers)
+
+Active events
+
+Event participation stats
+
+Revenue-ready metrics (future Razorpay)
+
+🍔 Canteen (Phase 2 – Scaffolding)
+
+Registration with business details
+
+Planned modules:
+
+Stock management
+
+Order lifecycle (current / completed / history)
+
+Queue & scheduled pickups
+
+🎒 Features by Role
+Student
+
+Timetable Management
+
+Vertical days, horizontal time slots
+
+Highlighted breaks
+
+Sticky headers, responsive grid
+
+Food Ordering
+
+Category chips, search & filters
+
+Veg / spicy badges, ratings, prep time
+
+Order now / schedule
+
+Recent orders
+
+Event Discovery
+
+Event cards with badges
+
+Date, time, location, organizer
+
+Register as Participant
+
+Resource Booking (scaffold-ready)
+
+Campus Map (voice assistance reserved)
+
+Attendance (view-only scaffold)
+
+Internships / Jobs (scaffold-ready)
+
+Teacher
+
+Dashboard with quick actions
+
+Timetable (same grid system)
+
+Attendance Management
+
+Date & section selector
+
+Per-student toggle
+
+Food Ordering (same UX as Student)
+
+Event participation or organizer request
+
+🔐 Auth & Session
+
+Login: POST /api/login
+
+{ "email": "", "password": "", "role": "" }
+
+
+Signup
+
+/api/signup/student
+
+/api/signup/teacher
+
+/api/signup/canteen
+
+Passwords hashed using bcrypt
+
+Session stored in localStorage
+
+isLoggedIn
+
+userRole
+
+currentUser
+
+eventRole (participant / organizer)
+
+User Menu
+
+Avatar initials
+
+Name & role
+
+Logout
+
+🎨 UI / UX Highlights
+
+Dark theme with orange accents
+
+Consistent design system via components/ui/*
+
+Role-based sidebars:
+
+Student
+
+Teacher
+
+Participant
+
+Organizer
+
+Admin
+
+Sticky timetable grid
+
+High-contrast accessibility support
+
+🗄️ Data Models (MongoDB)
+
+Student
+
+Profile, academics, interests, skills
+
+avatarInitials
+
+eventRoles
+
+Teacher
+
+Professional details, subjects
+
+avatarInitials
+
+eventRoles
+
+OrganizerRequest
+
+userId
+
+status (pending / approved / rejected)
+
+Canteen
+
+Business details
+
+Operating hours
+
+Banking info
+
+🧭 Key Routes Map
+User
+
+/student/dashboard
+
+/teacher/dashboard
+
+Event Roles
+
+/participant/dashboard
+
+/organizer/dashboard
+
+/organizer/create-event
+
+
+Admin
+
+/admin/dashboard
+
+/admin/approvals
+
+/admin/events
+
+/admin/user
+
+🚀 Quick Start
+npm install
+npm run dev
+
+
+Set MONGODB_URI in .env.local
+
+🛣️ Roadmap
+
+Organizer QR check-in
+
+Razorpay payments
+
+Event passes & ticketing
+
+Campus navigation with voice
+
+Advanced analytics (Admin & Organizer)
+
+🧪 Troubleshooting
+
+API 500 → Check MongoDB URI & Atlas IP
+
+Login fails → Ensure role matches user
+
+CSS issues → Restart Tailwind JIT server
+
+
