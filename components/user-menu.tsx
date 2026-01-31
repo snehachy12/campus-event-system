@@ -29,6 +29,15 @@ export function UserMenu() {
 
     const initials = user?.avatarInitials || (user?.name || 'U').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()
 
+    // Logic to format role name, keeping Canteen explicitly
+    const getRoleLabel = (role: string | undefined) => {
+        if (!role) return '-'
+        if (role === 'canteen') return 'Canteen Staff'
+        if (role === 'admin') return 'Administrator'
+        // Fallback for student, teacher, etc.
+        return role.charAt(0).toUpperCase() + role.slice(1)
+    }
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -43,13 +52,11 @@ export function UserMenu() {
                 <DropdownMenuLabel>{user?.name || 'Guest'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-zinc-300">
-                  Role: {user?.role === 'canteen' ? 'Canteen Manager' : user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || '-'}
+                    Role: {getRoleLabel(user?.role)}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="text-red-400">Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout} className="text-red-400 cursor-pointer">Logout</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 }
-
-

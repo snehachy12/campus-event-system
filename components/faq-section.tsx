@@ -23,9 +23,8 @@ export function FAQSection() {
         "Students sign up and get immediate access. Teachers and canteen staff require admin approval. Admins manage events, internships, and access.",
     },
     {
-      question: "How are payments handled for canteen orders?",
-      answer:
-        "Use Razorpay for online payments or a ticket-based system for quick pickups. Orders can be scheduled to reduce peak-time queues.",
+      question: "How do I book tickets for campus events?",
+      answer: "Booking is seamless. Browse upcoming events, register with a single click, and for paid workshops or fests, complete secure payments directly through the platform to get your instant digital ticket.",
     },
     {
       question: "Can students book resources like library desks or seminar halls?",
@@ -34,8 +33,7 @@ export function FAQSection() {
     },
     {
       question: "What happens after signup?",
-      answer:
-        "Students are redirected to /student/dashboard. Teacher and canteen accounts are pending until admin approval, then redirected to their respective dashboards.",
+      answer: "Students and Teachers are instantly redirected to their respective dashboards. Event Organizer accounts are set to pending until admin approval, after which they can access the organizer dashboard.",
     },
   ]
 

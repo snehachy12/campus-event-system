@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useTheme } from "next-themes"
 import Earth from "./ui/globe"
-import ScrambleHover from "./ui/scramble"
 import { FollowerPointerCard } from "./ui/following-pointer"
 import { motion, useInView } from "framer-motion"
 import { Suspense, useEffect, useRef, useState } from "react"
@@ -88,7 +87,7 @@ export default function Features() {
                   <h3 className="text-2xl leading-none font-semibold tracking-tight">Student Essentials</h3>
                   <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
                     <p className="max-w-[460px]">
-                      Timetables, event discovery, food ordering, resource booking, campus map and attendance — built for students.
+                      Timetables, event discovery, internship portals, resource booking, campus map and attendance — built for students.
                     </p>
                   </div>
                 </div>
@@ -201,7 +200,7 @@ export default function Features() {
 
                         {/* Right Column */}
                         <div className="flex flex-col gap-3">
-                          {["Food Ordering", "Navigation", "Attendance"].map((item, index) => (
+                          {["Internships", "Navigation", "Attendance"].map((item, index) => (
                             <motion.div
                               key={`right-${index}`}
                               className="bg-white rounded px-3 py-2 flex items-center gap-2 text-black text-sm font-medium shadow-sm"
@@ -214,7 +213,7 @@ export default function Features() {
                               whileHover={{ scale: 1.05 }}
                             >
                               <div className="w-4 h-4 flex items-center justify-center">
-                                {index === 0 && <span className="text-xs">🍔</span>}
+                                {index === 0 && <span className="text-xs">💼</span>}
                                 {index === 1 && <span className="text-xs">🗺️</span>}
                                 {index === 2 && <span className="text-xs">✅</span>}
                               </div>
@@ -275,7 +274,7 @@ export default function Features() {
                 <div className="flex flex-col gap-4">
                   <h3 className="text-2xl leading-none font-semibold tracking-tight">Teacher Tools</h3>
                   <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
-                    <p className="max-w-[460px]">Timetables, attendance updates, and streamlined canteen ordering for faculty.</p>
+                    <p className="max-w-[460px]">Timetables, attendance updates, and seamless event coordination for faculty.</p>
                   </div>
                 </div>
                 <div className="flex min-h-[300px] grow items-start justify-center select-none">
@@ -302,7 +301,7 @@ export default function Features() {
                 </div>
               </motion.div>
 
-              {/* Smart Components */}
+              {/* Smart Components (REPLACED CANTEEN WITH EVENTS) */}
               <motion.div
                 className="group border-secondary/40 text-card-foreground relative col-span-12 flex flex-col overflow-hidden rounded-xl border-2 p-6 shadow-xl transition-all ease-in-out md:col-span-6 xl:col-span-6 xl:col-start-2"
                 onMouseEnter={() => setIsFeature3Hovering(true)}
@@ -318,9 +317,9 @@ export default function Features() {
                 style={{ transition: "all 0s ease-in-out" }}
               >
                 <div className="flex flex-col gap-4">
-                  <h3 className="text-2xl leading-none font-semibold tracking-tight">Canteen & Queueing</h3>
+                  <h3 className="text-2xl leading-none font-semibold tracking-tight">Events & Activities</h3>
                   <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
-                    <p className="max-w-[460px]">Stock management, current/previous orders, and queue-based pre-order scheduling.</p>
+                    <p className="max-w-[460px]">Discover upcoming workshops, register for hackathons, and manage club activities effortlessly.</p>
                   </div>
                 </div>
                 <div className="flex grow items-center justify-center select-none relative min-h-[300px] p-4">
@@ -329,7 +328,7 @@ export default function Features() {
                       <div className="p-4">
                         <textarea
                           className="w-full min-h-[100px] bg-transparent border-none text-white placeholder:text-white/50 resize-none focus:outline-none text-base leading-relaxed"
-                          placeholder="Search menu, events, rooms..."
+                          placeholder="Search workshops, hackathons, seminars..."
                           value={inputValue}
                           onChange={(e) => setInputValue(e.target.value)}
                           onKeyDown={handleKeyDown}
@@ -369,7 +368,7 @@ export default function Features() {
                               <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
                               <path d="M2 12h20"></path>
                             </svg>
-                            Search Campus
+                            Search Events
                           </button>
                         </div>
                         <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">

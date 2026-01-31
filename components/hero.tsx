@@ -146,7 +146,7 @@ export default function Hero() {
               draggable={false}
               className="mx-4 mb-2 inline-block h-12 w-12 md:h-16 md:w-16"
             />
-            with ACE - Your Complete Campus Solution.
+            with Festo- Your Complete Campus Solution.
           </motion.h1>
         </div>
         <motion.div
