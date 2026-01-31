@@ -1,4 +1,9 @@
+DRIVE LINK FOR VIDEO
+https://drive.google.com/file/d/1qWZLducavnaZnKHssclxY2f-7KBMXj44/view?usp=sharing
+
+
 FESTO – Campus Event & Utility Platform
+
 
 FESTO is a unified campus platform combining academics, events, food, and administration with role-based access and event-specific roles.
 Built with a dark black + orange theme, optimized for clarity, scalability, and real campus workflows.
@@ -287,5 +292,6 @@ API 500 → Check MongoDB URI & Atlas IP
 Login fails → Ensure role matches user
 
 CSS issues → Restart Tailwind JIT server
+
 
 
