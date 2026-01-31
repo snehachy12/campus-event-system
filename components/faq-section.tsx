@@ -14,8 +14,7 @@ export function FAQSection() {
   const faqs = [
     {
       question: "What does this campus platform include?",
-      answer:
-        "Student timetables, event discovery, canteen ordering, library/seminar hall bookings, campus navigation (with voice), attendance, and internship/job listings.",
+      answer: "Student timetables, event organization & ticketing, library/seminar hall bookings, campus navigation (with voice), attendance, and internship/job listings.",
     },
     {
       question: "How does role-based access work?",
