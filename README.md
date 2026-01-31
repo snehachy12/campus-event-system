@@ -5,7 +5,7 @@ Built with a dark black + orange theme, optimized for clarity, scalability, and 
 
 🔑 Core Concept (What Makes FESTO Different)
 
-User Roles: Student, Teacher, Canteen, Admin
+User Roles: Student, Teacher,  Admin
 
 Event Roles (Dynamic):
 
@@ -88,8 +88,6 @@ Organizer requests
 
 Teacher registrations
 
-Canteen registrations
-
 Manage:
 
 Events (CRUD + publish)
@@ -108,18 +106,6 @@ Event participation stats
 
 Revenue-ready metrics (future Razorpay)
 
-🍔 Canteen (Phase 2 – Scaffolding)
-
-Registration with business details
-
-Planned modules:
-
-Stock management
-
-Order lifecycle (current / completed / history)
-
-Queue & scheduled pickups
-
 🎒 Features by Role
 Student
 
@@ -130,16 +116,6 @@ Vertical days, horizontal time slots
 Highlighted breaks
 
 Sticky headers, responsive grid
-
-Food Ordering
-
-Category chips, search & filters
-
-Veg / spicy badges, ratings, prep time
-
-Order now / schedule
-
-Recent orders
 
 Event Discovery
 
@@ -168,8 +144,6 @@ Attendance Management
 Date & section selector
 
 Per-student toggle
-
-Food Ordering (same UX as Student)
 
 Event participation or organizer request
 
@@ -254,7 +228,6 @@ userId
 
 status (pending / approved / rejected)
 
-Canteen
 
 Business details
 
@@ -297,7 +270,7 @@ Set MONGODB_URI in .env.local
 
 🛣️ Roadmap
 
-Organizer QR check-in
+Organizer
 
 Razorpay payments
 
